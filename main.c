@@ -1,10 +1,41 @@
+// Checkers Group Project 
+// Frank Martino & Will Robb & Justin Chiller & Hien Vo
+/*
+	This program contains 3 different playable games, Checkers, Connect Four and Tic Tac Toe; 
+
+
+	Credits:
+	Tic Tac Toe was -- Will Robb
+	Connect Four was -- Justin Chiller 
+	The UI and menu was -- Hein Vo
+	The Checkers game, and general code composition -- Frank Martino
+
+	The tic Tac Toe game is played versus the computer, and as far as we can tell is unbeatable; 
+	The Connect Four Game is solely two player;
+	The Checkers game both has Single player(versus the computer) and two player;  
+
+	All three game boards are displayed via Ascii charecters, and are played using a coordinate syste to refer to pieces on the board;
+
+	The C code was compiled and run in visual studio 2013, and as such may not compile/run in ecclipse/codeblocks and has not been tested to run in those enviroments;
+
+	Finally the system(cls) code used to clear the screen in between turns is only functional in Windows, not unix or on a mac;
+
+	TO DO LIST:
+		--Checkers AI
+		--Checkers King Me function 
+		--MORE COMMENTS
+		--Code Sterilization
+
+
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #define BOARD_ROWS 6
 #define BOARD_COLS 7
 
-
+//This is the global array storing the connect four board as it is initialy instanciated; 
 int connectBoard[BOARD_ROWS][BOARD_COLS] = {
 	{ 0, 0, 0, 0, 0, 0, 0 },
 	{ 0, 0, 0, 0, 0, 0, 0 },
@@ -14,6 +45,8 @@ int connectBoard[BOARD_ROWS][BOARD_COLS] = {
 	{ 0, 0, 0, 0, 0, 0, 0 },
 };
 
+//This global array is used for storing the checkers board and is set up as it is initially instanciated 
+//1's represent x's and 2's represent o's, 0's are empty spaces;
 int board[8][8] = {
 	{ 0, 1, 0, 1, 0, 1, 0, 1 },
 	{ 1, 0, 1, 0, 1, 0, 0, 0 },
@@ -25,14 +58,19 @@ int board[8][8] = {
 	{ 2, 0, 2, 0, 2, 0, 2, 0 }
 };
 
-
+//The done variable is used for exiting the connect four game 
 int done = 0;
-
+//quit is used in navigation of the checkers game
 int quit = 0;
+//turn is used by bot hconnect four and checkers to monitor whose turn it is and id the eventual winner 
 int turn = 1;
+//jumpable is used to signify if there is a possible jump
 int jumpable = 0;
+//The board T is used for tic tac toe
+//and the computer / user charecters are also used for tic tac toe 
 char boardT[3][3];
 char computer, user;
+
 
 int checkCheckersWin();
 void printBoardF();
@@ -68,11 +106,12 @@ int square_valid(int);
 int ticTacToe(void);
 
 
-
+//The main function begins the program by calling the menu function 
 main() {
 	menu();
 }
 
+// The menu alows the users to select which game they wish to play 
 void menu() {
 	int gameChoice= 0;
 
@@ -121,12 +160,10 @@ void menu() {
 	
 }
 
+//The checkers menu allows users to decide if they want to play 1 or 2 player checkers 
 void checkersMenu()
 {
 	int i;
-
-	
-	//printf("4. Credits\n");  // the credits is display our team's name and members
 
 	do{
 		printf("Welcome to Checker Game\n");
@@ -170,6 +207,8 @@ void checkersMenu()
 
 }
 
+// This is the equivelent of the main function for the checkers game
+// It monitors the turns and contains the game loop used to play 
 void checkers() {
 	//printf("Hello world");
 	//int turn = 1;
@@ -179,10 +218,18 @@ void checkers() {
 		printBoardC();
 		if (turn == 1) {
 			userMove();
+			if (checkCheckersWin() == 1) {
+				printf("Player 1 wins!");
+				break;
+			}
 			turn = 2;
 		}
 		else {
 			userMove();
+			if (checkCheckersWin() == 1) {
+				printf("Player 2 wins!");
+				break;
+			}
 			turn = 1;
 		}
 		clear_screen();
@@ -196,7 +243,7 @@ void checkers() {
 
 
 
-
+// The print Board C function is used to print the checker board out to the console 
 void printBoardC() {
 
 	printf("\n      0   1   2   3   4   5   6   7 \n");
@@ -227,12 +274,14 @@ void printBoardC() {
 }
 
 
-
+// This is the clear screen function it is only usable on windows machines;
+// It clears the console in between reprints of the board
 void clear_screen()
 {
 	std:system("cls");
 }
 
+// User move function is called from the checkers function it asks the user to select their move and if valid executes that move
 void userMove() {
 	int choice;
 	int x = 0;
@@ -306,11 +355,27 @@ void userMove() {
 	return;
 }
 
+//This function scans the board to check if the game is over by looking to see if either side is without pieces 
 int checkCheckersWin() {
+	int x = 0, o = 0;
+	for (int i = 0; i < 8; i++) {
+		for (int k = 0; k < 8; k++) {
+			if (board[i][k] == 1) {
+				x++;
+			}
+			else if (board[i][k] == 2) {
+				o++;
+			} 
+		}
+	}
+
+	if (x == 0 || o == 0)
+		return 1;
+
 	return 0;
 }
 
-
+//this function  moves the checker piece when the player wishes to do so 
 int move() {
 
 	int x, y, ty, tx;
