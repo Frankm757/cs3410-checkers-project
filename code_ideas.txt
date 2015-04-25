@@ -12,6 +12,9 @@ struct move {
 move *root;
 move *curnode;
 
+move *second Moves root;
+move *cur move 2;
+
 int get value at (y, x) {
   return value[y][x];
 }
@@ -32,4 +35,25 @@ return
 
 struct moveRecursive(lastMove Score, struct cur Best Move) {
   
+  
+  }
+  
+void free moves() {
+  cur noe = root;
+  temp * = curnode
+  while(curnode.nextmove != null) {
+    temp = curnode.next move
+    free curnode
+    curnode = temp;
+  }
+}
+
+void free next mvoes(){
+  cur noe2 = root2;
+  temp * = curnode2
+  while(curnode2.nextmove != null) {
+    temp = curnode2.next move
+    free curnode2
+    curnode2 = temp;
+  }
 }
