@@ -2,16 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#define NUM_POS_MOVES 15
-#define BOARD_ROWS 6
-#define BOARD_COLS 7
 
-struct possibleMove {
-	int moveCode; // 1 for Move_Left / 2 for Move_Right / 3 for Jump_Left / 4 for Jump_Right
-	int x, y, tx, ty, score;
-};
- 
-struct possibleMove moves[NUM_POS_MOVES];
+
 
 //This is the global array storing the connect four board as it is initialy instanciated; 
 int connectBoard[BOARD_ROWS][BOARD_COLS] = {
@@ -22,6 +14,7 @@ int connectBoard[BOARD_ROWS][BOARD_COLS] = {
 	{ 0, 0, 0, 0, 0, 0, 0 },
 	{ 0, 0, 0, 0, 0, 0, 0 },
 };
+
 
 //This global array is used for storing the checkers board and is set up as it is initially instanciated 
 //1's represent x's and 2's represent o's, 0's are empty spaces;
@@ -36,9 +29,8 @@ int board[8][8] = {
 	{ 2, 0, 2, 0, 2, 0, 2, 0 }
 };
 
-int tempBoard[8][8];
+int stasisBoard[8][8];
 
-int moveBoard[8][8];
 
 //The done variable is used for exiting the connect four game 
 int done = 0;
@@ -47,7 +39,7 @@ int quit = 0;
 //turn is used by bot hconnect four and checkers to monitor whose turn it is and id the eventual winner 
 int turn = 1;
 //jumpable is used to signify if there is a possible jump
-int cx = 0; 
+int cx = 0;
 int cy = 0;
 
 
@@ -56,278 +48,25 @@ int jumpable = 0;
 //and the computer / user charecters are also used for tic tac toe 
 char boardT[3][3];
 
-char computer, user;
-
-void initMoves() {
-	for (int i = 0; i < NUM_POS_MOVES; i++) {
-		moves[i].moveCode = 0;
-		moves[i].x = 0;
-		moves[i].y = 0;
-		moves[i].tx = 0;
-		moves[i].ty = 0;
-		moves[i].score = -15;
-	}
+int getPieceAt(int y, int x) {
+	return board[y][x];
 }
 
-int simpleAI() {
-
-	int player, comp, x = 0, y = 0, tx, ty, moveC;
-	//double pValue, cValue;
-
-	
-	/*
-	player = pieceValue(1);
-	comp = pieceValue(2);
-
-	pValue = 1 / player;
-	cValue = 1 / comp;
-	*/
-	initMoves(); // sets array of moves to zero
-
-	
-
-	for (int i = 0; i < 15; i++) {
-		findNext();
-		x = cx;
-		y = cy;
-
-		if (y != 0)
-			ty = y - 1;
-
-		if (x = 0) {
-			tx = x + 1;
-			if (board[ty][tx] == 0) {
-				moves[i].moveCode = 1;
-				moves[i].x = x;
-				moves[i].y = y;
-				moves[i].tx = tx;
-				moves[i].ty = ty;
-
-
-				
-				i++;
-
-			}
-			else if (board[ty][tx] == 1) {
-				if (board[ty - 1][tx - 1] == 0) {
-					moves[i].moveCode = 3;
-					moves[i].x = x;
-					moves[i].y = y;
-					moves[i].tx = tx;
-					moves[i].ty = ty;
-					moves[i].score = 1;
-				}
-
-			
-
-				i++;
-			}
-		}
-		else if (x = 7) {
-			tx = x - 1;
-			if (board[ty][tx] == 0) {
-
-				moves[i].moveCode = 2;
-				moves[i].x = x;
-				moves[i].y = y;
-				moves[i].tx = tx;
-				moves[i].ty = ty;
-				moves[i].score = 0;
-
-
-			}
-
-			else if (board[ty][tx] == 1) {
-				if (board[ty - 1][tx + 1] == 0) {
-					moves[i].moveCode = 4;
-					moves[i].x = x;
-					moves[i].y = y;
-					moves[i].tx = tx;
-					moves[i].ty = ty;
-					moves[i].score = 1;
-				}
-
-				
-				
-				i++;
-			}
-		}
-		else {
-			tx = x - 1;
-			if (board[ty][tx] == 0) {
-				moves[i].moveCode = 1;
-				moves[i].x = x;
-				moves[i].y = y;
-				moves[i].tx = tx;
-				moves[i].ty = ty;
-
-				if (board[ty - 1][tx - 1] == 1) {
-					moves[i].score = -1;
-				}
-
-				tx = x + 1;
-				i++;
-
-			}
-			else if (board[ty][tx] == 1) {
-				if (board[ty - 1][tx - 1] == 0) {
-					moves[i].moveCode = 3;
-					moves[i].x = x;
-					moves[i].y = y;
-					moves[i].tx = tx;
-					moves[i].ty = ty;
-					moves[i].score = 1;
-				}
-
-				if (board[ty - 2][tx - 2] == 1) {
-					moves[i].score = 0;
-				}
-
-				tx = x + 1;
-				i++;
-			}
-
-			if (board[ty][tx] == 0) {
-
-				moves[i].moveCode = 2;
-				moves[i].x = x;
-				moves[i].y = y;
-				moves[i].tx = tx;
-				moves[i].ty = ty;
-				moves[i].score = 0;
-
-
-				if (board[ty - 1][tx + 1] == 1) {
-					moves[i].score = -1;
-				}
-			}
-
-			else if (board[ty][tx] == 1) {
-				if (board[ty - 1][tx + 1] == 0) {
-					moves[i].moveCode = 4;
-					moves[i].x = x;
-					moves[i].y = y;
-					moves[i].tx = tx;
-					moves[i].ty = ty;
-					moves[i].score = 1;
-				}
-
-				if (board[ty - 2][tx + 2] == 1) {
-					moves[i].score = 0;
-				}
-
-				tx = x + 1;
-				i++;
-			}
-		}
-		
-	}
-	
-	int done = 0;
-	int i = 0;
-	int passes = 0;
-	int q;
-
-	//sort array based on score 
-	/*
-	while (done != 1) {
-		if (moves[i].score < moves[i + 1].score) {
-			q = moves[i + 1].score;
-			moves[i + 1].score = moves[i].score;
-			moves[i].score = q;
-			q = 0;
-			passes++;
-		} 
-		i++;
-		if (i == 15) {
-			i = 0;
-			if (passes == 0) {
-				done = 1;
-			}
-			else {
-				passes = 0;
-			}
-		}
-	}*/
-
-	srand(time(NULL));
-
-	int r = rand() % 7;
-
-	moveC = moves[r].moveCode;
-	tx = moves[r].tx;
-	x = moves[r].x;
-	ty = moves[r].ty;
-	y = moves[r].y;
-
-	switch (moveC){
-	case 1: 
-		printf("move 1");
-		getchar();
-		move(2, x, y, ty, tx);
-		break;
-	case 2:
-		printf("move 2");
-		getchar();
-		move(2, x, y, ty, tx);
-		break;
-	case 3: 
-		printf("jump 3");
-		getchar();
-		jump(2, tx, ty, x, y);
-		break;
-	case 4:
-		printf("jump 4");
-		getchar();
-		jump(2, tx, ty, x, y);
-		break;
-	}
-
-	return 0;
-}
-
-
-void findNext() {
-	int  loopStop = 0;
-
-	cx++;
-	
-
-	while (loopStop == 0) {
-		if (cx < 8) {
-			if (board[cy][cx] == 2 || board[cy][cx] == 6)
-				loopStop = 1;
-			cx++;
-		}
-		else { 
-			cy++;
-			if (cy = 8) {
-				cy--;
-			}
-			cx = 0;
-			if (board[cy][cx] == 2 || board[cy][cx] == 6)
-				loopStop = 1;
-			cx++;
+void saveBoardState() {
+	for (int y = 0; y < 8; y++) {
+		for (int x = 0; x < 8; x++) {
+			stasisBoard[y][x] = board[y][x];
 		}
 	}
 }
 
-
-int pieceValue(int p) {
-	int x, y;
-	int num = 0;
-
-	for (x = 0; x < 8; x++) {
-		for (y = 0; y < 8; y++) {
-			if (board[x][y] == p)
-				num = num + 1;
+void reupBoardState() {
+	for (int y = 0; y < 8; y++) {
+		for (int x = 0; x < 8; x++) {
+			board[y][x] = stasisBoard[y][x];
 		}
 	}
-
-	return num;
-
 }
-
 
 void clearBoard() {
 	int place = 0;
@@ -718,12 +457,12 @@ int checkChainJump(int y, int x) {
 		if (board[y - 1][x + 1] == 1 || board[y - 1][x - 1] == 1) {
 			if (board[y - 2][x - 2] == 0 || board[y - 2][x + 2] == 0) {
 			
-				return ;
+				return 2;
 			}
 		}
 	}
 	
-	return ;
+	return 1;
 }
 
 //This function prints the connect four board to the console

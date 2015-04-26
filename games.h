@@ -1,16 +1,31 @@
+#define NUM_POS_MOVES 15
+#define BOARD_ROWS 6
+#define BOARD_COLS 7
+
+
+
+
+
+char computer, user;
+
+
 
 
 extern int checkCheckersWin(); //yes
 
+extern int getPieceAt(int y, int x);
 
-int move(int t, int x, int y, int ty, int tx); // yes
+extern void saveBoardState();
+
+extern void reupBoardState();
+
+
+extern int move(int t, int x, int y, int ty, int tx); // yes
 extern int checkChainJump(int y, int x); //yes
 extern void clear_screen(); // yes
-int jump(int t, int tx, int ty, int x, int y);
+extern int jump(int t, int tx, int ty, int x, int y);
 
-extern int simpleAI();
-extern void initBoard();
-extern void findNext();
+
 
 extern void clearBoard();
 extern void emptyBoard();

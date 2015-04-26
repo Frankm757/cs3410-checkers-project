@@ -19,14 +19,9 @@
 
 	The program only accepts integers as input
 
-	The C code was compiled and run in visual studio 2013, and as such may not compile/run in ecclipse/codeblocks and has not been tested to run in those enviroments;
+	The C code was compiled and run in visual studio 2013, and as such may not compile/run in ecclipse/codeblocks or a terminal and has not been tested to compile/run in those enviroments;
 
 	Finally the system(cls) code used to clear the screen in between turns is only functional in Windows, not unix or on a mac;
-
-	TO DO LIST:
-		--Checkers AI
-		--Checkers King Me function 
-		
 
 
 */
@@ -35,6 +30,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "games.h"
+#include "compAI.h"
 
 
 void menu();
@@ -49,6 +45,8 @@ int ai = 0;
 //The main function begins the program by calling the menu function 
 main() {
 	menu();
+	//aiMain();
+	//getchar();
 }
 
 
@@ -183,8 +181,9 @@ void checkers() {
 			turnn = 1;
 		}
 		else {
+			aiMain();
 			//checkAI();
-			int t = simpleAI();
+			//int t = simpleAI();
 			kingMe(2);
 			if (checkCheckersWin() == 1) {
 				printf("Computer wins!");
